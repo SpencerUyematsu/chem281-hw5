@@ -1,8 +1,3 @@
-"""
-This file contains the implementation of Problem 2 in problem set 5. 
-It calculates the potential energy surface for the ground and 5 excited states of N2.
-"""
-
 #include <bitset>
 #include <iostream>
 #include <vector>
