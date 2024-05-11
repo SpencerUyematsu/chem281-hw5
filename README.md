@@ -135,3 +135,4 @@ As we can see, there is a clear ground state at most of the radius values, howev
 
 The Hartree Fock curve does a reasonable job of capturing the location of the radius with the lowest minimum energy, but does a poor job of capturing the ground or excited state curves. It has a much higher energy value at large radii.
 
+The back tail of the excited states contains a few inconsisten values. This might be able to be eliminated by reducing the tolerance in the Davidson-Liu SEM.
