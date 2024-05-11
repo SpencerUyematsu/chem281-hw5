@@ -1,3 +1,7 @@
+"""
+This file contains my base 
+"""
+
 #include "eigen_solver.h"
 
 void orthogonalize_cols(std::vector<sau::my_vector<double>>& previous_b, sau::my_vector<double>& new_b){
@@ -13,12 +17,17 @@ std::vector<double> davidson(sau::my_sparse_matrix<double>& H, int num_sols){
 
     sau::my_matrix<double> K(1, 1); 
 
+    // holds previous/current basis and Hb products
     std::vector<sau::my_vector<double>> basis;
     std::vector<sau::my_vector<double>> Hb;
 
+    // all previous eigen values
     std::vector<std::vector<double>> eig_vals;
+
+    // used to store current eigen vector
     sau::my_matrix<double> eig_vec;
 
+    // fill basis with initial random, normalized vectors
     sau::my_vector<double> b(H.rows());
     b.fill_random();
     b.normalize();
@@ -34,15 +43,16 @@ std::vector<double> davidson(sau::my_sparse_matrix<double>& H, int num_sols){
     sau::my_vector<double> temp_Hb;
     int old_n = 0, n = 0;
 
-    int current_num_sols = num_sols;
-    std::vector<bool> still_testing;
+    int current_num_sols = num_sols; // current number of eigenvalues to calculate
+    std::vector<bool> still_testing; // contains information if there is more calculation needed for a given eigen vector
     for(int i = 0; i < num_sols; i++) still_testing.push_back(true);
 
-    int current_solution = 0;
+    int current_solution = 0; // lowest eigen value yet to converge
 
     for(int i = 0; i < k; i++){
         old_n = n;
-        n += current_num_sols;
+
+        n += current_num_sols; // added basis vectors from previous solution
         K.resize(n, n);
 
         for(int j = old_n; j < n; j++) Hb.push_back(H * basis[j]);
@@ -53,6 +63,7 @@ std::vector<double> davidson(sau::my_sparse_matrix<double>& H, int num_sols){
             }
         }
 
+        // solve K
         std::tuple <sau::my_vector<double>, sau::my_matrix<double>> eigen_results = solve_eigensystem(K);
 
         std::vector<double> new_eig_value_set;
@@ -65,6 +76,7 @@ std::vector<double> davidson(sau::my_sparse_matrix<double>& H, int num_sols){
         std::vector<sau::my_vector<double>> eig_vecs;
         for(int j = 0; j < num_sols; j++) eig_vecs.push_back(eig_vec.extract_column(j));
         
+        // initialize new basis vectors
         std::vector<sau::my_vector<double>> new_basis;
         for(int j = 0; j < current_num_sols; j++){
             sau::my_vector<double> temp_basis(H.rows());
@@ -72,6 +84,7 @@ std::vector<double> davidson(sau::my_sparse_matrix<double>& H, int num_sols){
             new_basis.push_back(temp_basis);
         }
 
+        // calculate new basis vectors
         int basis_count = 0;
         for(int p = 0; p < num_sols; p++){
             if(still_testing[p]){
@@ -90,12 +103,13 @@ std::vector<double> davidson(sau::my_sparse_matrix<double>& H, int num_sols){
             }
         }
         
-
+        // add new basis vector
         for(int j = 0; j < current_num_sols; j++){
             orthogonalize_cols(basis, new_basis[j]);
             basis.push_back(new_basis[j]);
         }
     
+        // check convergence for lowest unconverged eigenvalue
         if(i > 2){
             if(still_testing[current_solution] && std::abs(eig_vals[i][current_solution] - eig_vals[i - 1][current_solution]) < tol){
                 still_testing[current_solution] = false;
@@ -103,6 +117,8 @@ std::vector<double> davidson(sau::my_sparse_matrix<double>& H, int num_sols){
                 current_solution++;
             }
         }
+
+        // stop iterating when all velues converge
         if(current_solution >= num_sols){
             std::cout << "Iterations: " << i << std::endl;
             return eig_vals.back();

@@ -1,5 +1,3 @@
-export LD_LIBRARY_PATH=/home/jovyan/lib:/home/jovyan/lapackpp/lib:$LD_LIBRARY_PATH
-
 # Chem281: Problem Set 5
 This repository contains the code to complete the problems for Problem Set 5.
 
