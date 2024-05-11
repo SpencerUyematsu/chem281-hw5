@@ -1,5 +1,5 @@
 """
-This file contains my base 
+This file contains my base implementation for the lanczos method and the davidson liu SEM
 """
 
 #include "eigen_solver.h"
