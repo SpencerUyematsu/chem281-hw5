@@ -1,7 +1,3 @@
-"""
-This file contains my base implementation for the lanczos method and the davidson liu SEM
-"""
-
 #include "eigen_solver.h"
 
 void orthogonalize_cols(std::vector<sau::my_vector<double>>& previous_b, sau::my_vector<double>& new_b){
